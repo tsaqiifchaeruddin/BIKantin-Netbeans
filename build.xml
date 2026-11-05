@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ============================================================
+     BI-KANTIN - NetBeans Java with Ant project
+     Jalankan lewat NetBeans: klik kanan project > Run
+     Atau lewat cmd        : ant -f build.xml run
+     ============================================================ -->
+<project name="BIKantin" default="default" basedir=".">
+    <description>Builds, runs and packages the BI-KANTIN desktop application.</description>
+
+    <property file="nbproject/project.properties"/>
+
+    <path id="project.classpath">
+        <pathelement location="${build.classes.dir}"/>
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="-init">
+        <mkdir dir="${build.classes.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <target name="init" depends="-init"/>
+    <target name="deps" depends="init"/>
+
+    <target name="compile" depends="init" description="Compile seluruh source Java">
+        <javac srcdir="${src.dir}"
+               destdir="${build.classes.dir}"
+               source="${javac.source}"
+               target="${javac.target}"
+               encoding="${source.encoding}"
+               includeantruntime="false"
+               debug="true"
+               deprecation="false">
+            <classpath refid="project.classpath"/>
+        </javac>
+        <copy todir="${build.classes.dir}" failonerror="false">
+            <fileset dir="${src.dir}" excludes="**/*.java"/>
+        </copy>
+    </target>
+
+    <target name="jar" depends="compile" description="Buat file JAR di folder dist">
+        <jar destfile="${dist.jar}">
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+                <attribute name="Class-Path" value="lib/mysql-connector-j-26.7.0.jar"/>
+            </manifest>
+            <fileset dir="${build.classes.dir}"/>
+        </jar>
+        <copy todir="${dist.dir}/lib">
+            <fileset dir="${lib.dir}"/>
+        </copy>
+    </target>
+
+    <target name="run" depends="compile" description="Jalankan aplikasi">
+        <java classname="${main.class}" fork="true" failonerror="true">
+            <classpath refid="project.classpath"/>
+        </java>
+    </target>
+
+    <target name="clean" description="Hapus hasil build">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    <target name="default" depends="jar"/>
+    <target name="debug" depends="compile"/>
+    <target name="test" depends="compile"/>
+</project>
